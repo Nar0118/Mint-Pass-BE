@@ -1,0 +1,6579 @@
+{
+  "basePath": "/",
+  "consumes": ["application/json"],
+  "info": {
+    "title": "Passphrase Launchpad Server",
+    "version": "1.0.0",
+    "license": {
+      "name": "ISC"
+    }
+  },
+  "tags": [
+    {
+      "name": "User",
+      "description": "Endpoints related to user management"
+    },
+    {
+      "name": "Company",
+      "description": "Endpoints related to company management"
+    },
+    {
+      "name": "FundingPools",
+      "description": "Endpoints related to fundingPools management"
+    },
+    {
+      "name": "Investments",
+      "description": "Endpoints related to investments management"
+    },
+    {
+      "name": "Invitations",
+      "description": "Endpoints related to invitations management"
+    },
+    {
+      "name": "Webhooks",
+      "description": "Endpoints related to webhooks management"
+    }
+  ],
+  "definitions": {
+    "Users": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "default": null
+        },
+        "surname": {
+          "type": "string",
+          "default": null
+        },
+        "country": {
+          "type": "string",
+          "default": null
+        },
+        "nationality": {
+          "type": "string",
+          "default": null
+        },
+        "email": {
+          "type": "string",
+          "unique": true,
+          "required": true,
+          "lowercase": true,
+          "trim": true,
+          "default": null
+        },
+        "password": {
+          "type": "string",
+          "default": null,
+          "select": false
+        },
+        "role": {
+          "type": "string",
+          "default": "basic",
+          "enum": {
+            "BASIC": "basic",
+            "ADMIN": "admin"
+          }
+        },
+        "imageurl": {
+          "type": "string",
+          "default": null
+        },
+        "walletAddresses": {
+          "type": "array",
+          "default": []
+        },
+        "authenticatedByGoogle": {
+          "type": "boolean",
+          "default": false
+        },
+        "emailVerificationToken": {
+          "type": "string",
+          "default": null
+        },
+        "authenticatedByTwitter": {
+          "type": "boolean",
+          "default": false
+        },
+        "creditAmount": {
+          "type": "number",
+          "default": null
+        },
+        "identificationId": {
+          "type": "string",
+          "default": null
+        },
+        "primaryWalletAddress": {
+          "type": "string",
+          "default": null
+        },
+        "kycPassed": {
+          "type": "boolean",
+          "default": false
+        },
+        "referralCode": {
+          "type": "string",
+          "default": null
+        }
+      },
+      "required": ["email", "passwords"],
+      "type": "object"
+    },
+    "UserReferrals": {
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "default": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "type": "number",
+                "default": null
+              },
+              "_id": {
+                "type": "string",
+                "default": null
+              },
+              "sender": {
+                "type": "string",
+                "default": null
+              },
+              "recipient": {
+                "type": "string",
+                "default": null
+              },
+              "referralCode": {
+                "type": "string",
+                "default": null
+              },
+              "__v": {
+                "type": "number",
+                "default": null
+              }
+            }
+          }
+        }
+      },
+      "required": ["_id"],
+      "type": "object"
+    },
+    "Companies": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "createdAt": {
+          "type": "number",
+          "default": null
+        },
+        "category": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "websiteUrl": {
+          "type": "string",
+          "default": null
+        },
+        "iconUrl": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "string",
+                "default": null
+              },
+              "description": {
+                "type": "string",
+                "default": null
+              }
+            }
+          }
+        },
+        "fundingTeam": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "memberImg": {
+                "type": "string",
+                "default": null,
+                "required": true
+              },
+              "name": {
+                "type": "string",
+                "default": null,
+                "required": true
+              },
+              "surname": {
+                "type": "string",
+                "default": null
+              },
+              "position": {
+                "type": "string",
+                "default": null,
+                "required": true
+              },
+              "linkedinLink": {
+                "type": "string",
+                "default": null
+              }
+            }
+          }
+        },
+        "socialMedia": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "media": {
+                "type": "string",
+                "default": "telegram",
+                "required": true
+              },
+              "url": {
+                "type": "string",
+                "default": null,
+                "required": true
+              }
+            }
+          }
+        }
+      },
+      "required": ["name", "description", "createdAt", "category", "iconUrl"],
+      "type": "object"
+    },
+
+    "FundingPools": {
+      "properties": {
+        "slug": {
+          "type": "string",
+          "unique": true,
+          "dropDups": true,
+          "required": true,
+          "lowercase": true,
+          "trim": true
+        },
+        "description": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "auctionStart": {
+          "type": "number",
+          "default": null
+        },
+        "auctionEnd": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "pricePerToken": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "vesting": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "launchpads": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "backers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
+          },
+          "default": null
+        },
+        "minAmount": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "maxAmount": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "capacity": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "saleType": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "default": null
+        },
+        "company": {
+          "type": "string",
+          "ref": "Company",
+          "required": true,
+          "default": null
+        },
+        "templateId": {
+          "type": "string",
+          "default": null
+        },
+        "saftFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "saftId": {
+                "type": "string",
+                "default": null
+              },
+              "ownerId": {
+                "type": "string",
+                "default": null,
+                "required": true,
+                "ref": "User"
+              },
+              "isValid": {
+                "type": "boolean",
+                "default": true
+              },
+              "procedureId": {
+                "type": "string",
+                "default": null
+              },
+              "signatureId": {
+                "type": "string",
+                "default": null
+              },
+              "createdAt": {
+                "type": "number",
+                "default": null
+              }
+            }
+          },
+          "default": null
+        },
+        "walletAddress": {
+          "type": "string",
+          "default": null
+        },
+        "contractAddress": {
+          "type": "string",
+          "default": null
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "default": null
+        },
+        "referrerFee": {
+          "type": "string",
+          "required": true,
+          "default": null
+        },
+        "createdAt": {
+          "type": "number",
+          "required": true,
+          "default": null
+        }
+      },
+      "required": [
+        "slug",
+        "description",
+        "auctionStart",
+        "auctionEnd",
+        "pricePerToken",
+        "vesting",
+        "launchpads",
+        "minAmount",
+        "maxAmount",
+        "capacity",
+        "company",
+        "title",
+        "referrerFee",
+        "createdAt"
+      ],
+      "type": "object"
+    },
+    "Investments": {
+      "properties": {
+        "userId": {
+          "type": "string",
+          "ref": "User",
+          "required": true
+        },
+        "user": {
+          "type": "string",
+          "ref": "User",
+          "required": true
+        },
+        "amountInvested": {
+          "type": "number",
+          "default": 0
+        },
+        "companyId": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "companyName": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "companyImage": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "investmentDate": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "paymentDate": {
+          "type": "number",
+          "default": null,
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "claimingPortals": {
+          "type": "string",
+          "default": null,
+          "required": true
+        },
+        "saftId": {
+          "type": "string",
+          "default": null
+        },
+        "fundingPoolId": {
+          "type": "number",
+          "ref": "FundingPool",
+          "required": true
+        },
+        "verified": {
+          "type": "boolean",
+          "default": false
+        },
+        "transactionHash": {
+          "type": "string",
+          "default": null
+        },
+        "successfullyCompleted": {
+          "type": "boolean",
+          "default": false
+        },
+        "gas": {
+          "type": "number",
+          "default": null
+        }
+      },
+      "required": [
+        "userId",
+        "user",
+        "companyId",
+        "companyName",
+        "investmentDate",
+        "status",
+        "claimingPortals",
+        "fundingPoolId"
+      ],
+      "type": "object"
+    },
+    "Invitations": {
+      "properties": {
+        "sender": {
+          "type": "string",
+          "ref": "User",
+          "required": true
+        },
+        "recipient": {
+          "type": "string",
+          "lowercase": true,
+          "trim": true,
+          "required": true
+        },
+        "referralCode": {
+          "type": "string",
+          "required": true,
+          "refPath": "User.referralCode",
+          "default": null
+        },
+        "createdAt": {
+          "type": "number",
+          "default": null,
+          "required": true
+        }
+      },
+      "required": ["sender", "recipient", "referralCode", "createdAt"],
+      "type": "object"
+    }
+  },
+  "paths": {
+    "/v1/users/login": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "userLogin",
+        "summary": "User Login",
+        "description": "Endpoint for user login",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/uploadFile": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "uploadFile",
+        "summary": "uploadFile",
+        "description": "Endpoint for uploadFile",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful uploaded file",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "uploadFile credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "code": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/pass-2FA": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "pass2FA",
+        "summary": "Pass 2FA",
+        "description": "Endpoint for pass 2FA",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful passed",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "2FA credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "code": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/resend-2FA": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "resend2FA",
+        "summary": "Resend 2FA Code",
+        "description": "Endpoint for Resend 2FA Code",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful sent",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "resend2FA",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "2FA credentials",
+            "required": true,
+            "schema": {
+              "properties": {}
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/login": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "userLogin",
+        "summary": "User Login",
+        "description": "Endpoint for user login",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/login/admin": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "loginForAdmin",
+        "summary": "Login For Admin",
+        "description": "Endpoint for admin user login",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully login",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/login/admin": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "loginForAdmin",
+        "summary": "Login For Admin",
+        "description": "Endpoint for admin user login",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully login",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/signup": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "userSignUp",
+        "summary": "User Sign Up",
+        "description": "Endpoint for user sign up",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful sign up",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "firtsName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "referralCode": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/signup": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "userSignUp",
+        "summary": "User Sign Up",
+        "description": "Endpoint for user sign up",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful sign up",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "referralCode": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/login/google": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "loginByGoogle",
+        "summary": "User Log In By Google",
+        "description": "Endpoint for user log in by google",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful log in",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "googleToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/login/google": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "loginByGoogle",
+        "summary": "User Log In By Google",
+        "description": "Endpoint for user log in by google",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful log in",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "googleToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/signup/google": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "signupByGoogle",
+        "summary": "User Sign Up By Google",
+        "description": "Endpoint for user sign up by google",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful sign up",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "googleToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/signup/google": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "signupByGoogle",
+        "summary": "User Sign Up By Google",
+        "description": "Endpoint for user sign up by google",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful sign up",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "googleToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/recover-password": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "sendRecoverPasswordEmail",
+        "summary": "Send Recover Password Email",
+        "description": "Endpoint for recover password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful recovered",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "emailVerificationToken": {
+                  "type": "string",
+                  "default": null
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "sendRecoverPasswordEmail",
+              "type": "object",
+              "required": ["success"]
+            },
+            "401": {
+              "description": "Invalid credentials"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/recover-password": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "sendRecoverPasswordEmail",
+        "summary": "Send Recover Password Email",
+        "description": "Endpoint for recover password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful recovered",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "emailVerificationToken": {
+                  "type": "string",
+                  "default": null
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "sendRecoverPasswordEmail",
+              "type": "object",
+              "required": ["success"]
+            },
+            "401": {
+              "description": "Invalid credentials"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/logout": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "logout",
+        "summary": "User Logout",
+        "description": "Endpoint for user logout",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful logout",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "logout",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/logout": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "logout",
+        "summary": "User Logout",
+        "description": "Endpoint for user logout",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful logout",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "logout",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/invite-friends": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "inviteFriends",
+        "summary": "Invite Friends",
+        "description": "Endpoint for invite friends",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful Invited",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "inviteFriends",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "The email is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/invite-friends": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "inviteFriends",
+        "summary": "Invite Friends",
+        "description": "Endpoint for invite friends",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful Invited",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "inviteFriends",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "The email is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/saft": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "downloadSaft",
+        "summary": "Download Saft",
+        "description": "Endpoint for download Saft",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful downloaded",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "downloadSaft",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/saft": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "downloadSaft",
+        "summary": "Download Saft",
+        "description": "Endpoint for download Saft",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful downloaded",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "downloadSaft",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/start-kyc": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "startKYC",
+        "summary": "Start KYC",
+        "description": "Endpoint for Start KYC",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful started",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "downloadSaft",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/start-kyc": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "startKYC",
+        "summary": "Start KYC",
+        "description": "Endpoint for Start KYC",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful started",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "downloadSaft",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/admin": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "createUser",
+        "summary": "Create User",
+        "produces": ["application/json"],
+        "responses": {
+          "204": {
+            "email": "No content",
+            "password": "No content"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "default": "basic"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email", "passwords"]
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": ["User"],
+        "operationId": "getAllUsers",
+        "summary": "Get All Users",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/admin": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "createUser",
+        "summary": "Create User",
+        "produces": ["application/json"],
+        "responses": {
+          "204": {
+            "email": "No content",
+            "password": "No content"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "default": "basic"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email", "passwords"]
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": ["User"],
+        "operationId": "getAllUsers",
+        "summary": "Get All Users",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/referrals": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserReferrals",
+        "summary": "Get User Referrals",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserReferrals"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/referrals": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserReferrals",
+        "summary": "Get User Referrals",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserReferrals"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/referred-user-wallet": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getReferredUserWallet",
+        "summary": "Get Referred User Wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "getReferredUserWallet",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/referred-user-wallet": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getReferredUserWallet",
+        "summary": "Get Referred User Wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "data": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "getReferredUserWallet",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/me": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getCurrentUser",
+        "summary": "Get Current User",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/me": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getCurrentUser",
+        "summary": "Get Current User",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/investments": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserInvestments",
+        "summary": "Get User Investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/investments": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserInvestments",
+        "summary": "Get User Investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/validation-by-email/{email}": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "userValidationCheckingByEmail",
+        "summary": "Check User Validation By Email",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": "Success"
+                }
+              },
+              "title": "userValidationCheckingByEmail",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "email",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/validation-by-email/{email}": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "userValidationCheckingByEmail",
+        "summary": "Check User Validation By Email",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": "Success"
+                }
+              },
+              "title": "userValidationCheckingByEmail",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "email",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/wallets": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserWallet",
+        "summary": "Get User Wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "walletAddresses": {
+                  "type": "array",
+                  "default": null
+                }
+              },
+              "title": "getUserWallet",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/wallets": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUserWallet",
+        "summary": "Get User Wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "walletAddresses": {
+                  "type": "array",
+                  "default": null
+                }
+              },
+              "title": "getUserWallet",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users/search": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "searchUsers",
+        "summary": "Search Users",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Users"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchUsers",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v2/users/search": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "searchUsers",
+        "summary": "Search Users",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Users"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchUsers",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v1/users/media/{identificationId}": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getKycMedia",
+        "summary": "Get Kyc Media",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "array",
+                  "default": null
+                }
+              },
+              "title": "userValidationCheckingByEmail",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identificationId",
+            "schema": {
+              "properties": {
+                "identificationId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["identificationId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/users/media/{identificationId}": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getKycMedia",
+        "summary": "Get Kyc Media",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "array",
+                  "default": null
+                }
+              },
+              "title": "userValidationCheckingByEmail",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identificationId",
+            "schema": {
+              "properties": {
+                "identificationId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["identificationId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/users/kyc-document": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getKycDocument",
+        "summary": "Get KYC Documents",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "default": null
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "getKycDocument",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/users/kyc-document": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getKycDocument",
+        "summary": "Get KYC Documents",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "default": null
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "getKycDocument",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/users": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateCurrentUser",
+        "summary": "Update Current User",
+        "description": "Endpoint for update current user",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateCurrentUser",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email", "passwords"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateCurrentUser",
+        "summary": "Update Current User",
+        "description": "Endpoint for update current user",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateCurrentUser",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["email", "passwords"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/admin/update-user/{id}": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateUserById",
+        "summary": "Update User By Id",
+        "description": "Endpoint for update user by Id",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateUserById",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "primaryWalletAddress": {
+                  "type": "array",
+                  "default": []
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/admin/update-user/{id}": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateUserById",
+        "summary": "Update User By Id",
+        "description": "Endpoint for update user by Id",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateUserById",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Id is wrong!!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "primaryWalletAddress": {
+                  "type": "array",
+                  "default": []
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/update-forgotten-password": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateForgottenPassword",
+        "summary": "Update uForgotten Password",
+        "description": "Endpoint for update Forgotten Password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "updateForgottenPassword",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "newPassword": {
+                  "type": "string"
+                },
+                "emailVerificationToken": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/update-forgotten-password": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateForgottenPassword",
+        "summary": "Update uForgotten Password",
+        "description": "Endpoint for update Forgotten Password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "updateForgottenPassword",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "newPassword": {
+                  "type": "string"
+                },
+                "emailVerificationToken": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/change-password": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "changePassword",
+        "summary": "Change Password",
+        "description": "Endpoint for change password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful changed",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "error": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "changePassword",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/change-password": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "changePassword",
+        "summary": "Change Password",
+        "description": "Endpoint for change password",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful changed",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "error": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "changePassword",
+              "type": "object",
+              "required": ["success"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/file": {
+      "post": {
+        "tags": ["User"],
+        "operationId": "uploadFile",
+        "summary": "Upload File",
+        "description": "Endpoint for upload file",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful uploaded"
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "buffer": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "originalname": {
+                      "type": "string",
+                      "default": null
+                    }
+                  }
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/update-wallet": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateWallet",
+        "summary": "Update Wallet",
+        "description": "Endpoint for update wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateWallet",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "walletAddress": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/update-wallet": {
+      "put": {
+        "tags": ["User"],
+        "operationId": "updateWallet",
+        "summary": "Update Wallet",
+        "description": "Endpoint for update wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful updated",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateWallet",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "walletAddress": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/admin/{id}": {
+      "delete": {
+        "tags": ["User"],
+        "operationId": "deleteUser",
+        "summary": "Delete User",
+        "description": "Endpoint for delete user",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/users/admin/{id}": {
+      "delete": {
+        "tags": ["User"],
+        "operationId": "deleteUser",
+        "summary": "Delete User",
+        "description": "Endpoint for delete user",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/users/delete-wallet": {
+      "delete": {
+        "tags": ["User"],
+        "operationId": "deleteWallet",
+        "summary": "Delete Wallet",
+        "description": "Endpoint for delete wallet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful deleted",
+            "schema": {
+              "$ref": "#/definitions/Users",
+              "title": "updateWallet",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "walletAddress": {
+                  "type": "string"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": []
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/companies/search": {
+      "get": {
+        "tags": ["Company"],
+        "operationId": "searchCompanies",
+        "summary": "Search Company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Companies"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchCompaines",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v1/companies/file": {
+      "post": {
+        "tags": ["Company"],
+        "operationId": "uploadFile",
+        "summary": "Upload File",
+        "description": "Endpoint for upload file",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful uploaded"
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "buffer": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "originalname": {
+                      "type": "string",
+                      "default": null
+                    }
+                  }
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/companies/search": {
+      "get": {
+        "tags": ["Company"],
+        "operationId": "searchCompanies",
+        "summary": "Search Company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Companies"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchCompaines",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v2/companies/file": {
+      "post": {
+        "tags": ["Company"],
+        "operationId": "uploadFile",
+        "summary": "Upload File",
+        "description": "Endpoint for upload file",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful uploaded"
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "buffer": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "originalname": {
+                      "type": "string",
+                      "default": null
+                    }
+                  }
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/companies": {
+      "post": {
+        "tags": ["Company"],
+        "operationId": "registerCompany",
+        "summary": "Register Company",
+        "description": "Endpoint for register company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful registered",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "registerCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Company"],
+        "operationId": "getAllCompanies",
+        "summary": "Get All Companies",
+        "description": "Endpoint for get all companies",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "registerCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v2/companies": {
+      "post": {
+        "tags": ["Company"],
+        "operationId": "registerCompany",
+        "summary": "Register Company",
+        "description": "Endpoint for register company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful registered",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "registerCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Company"],
+        "operationId": "getAllCompanies",
+        "summary": "Get All Companies",
+        "description": "Endpoint for get all companies",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "registerCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/companies/{id}": {
+      "get": {
+        "tags": ["Company"],
+        "operationId": "getCompanyById",
+        "summary": "Get Company By Id",
+        "description": "Endpoint for get company by Id",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "getCompanyById",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Company"],
+        "operationId": "updateCompany",
+        "summary": "Update Company",
+        "description": "Endpoint for update company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "updateCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Company"],
+        "operationId": "deleteCompany",
+        "summary": "Delete Company",
+        "description": "Endpoint for delete company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/companies/{id}": {
+      "get": {
+        "tags": ["Company"],
+        "operationId": "getCompanyById",
+        "summary": "Get Company By Id",
+        "description": "Endpoint for get company by Id",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "getCompanyById",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Company"],
+        "operationId": "updateCompany",
+        "summary": "Update Company",
+        "description": "Endpoint for update company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "updateCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/Companies",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Company"],
+        "operationId": "deleteCompany",
+        "summary": "Delete Company",
+        "description": "Endpoint for delete company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Company does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools/search": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "searchFundingPools",
+        "summary": "Search FundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/FundingPools"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchFundignPools",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools/{id}/addFundraisingSC": {
+      "post": {
+        "tags": ["FundingPools"],
+        "operationId": "addFundraisingSC",
+        "summary": "Add Fundraising SC",
+        "description": "Endpoint for add fundraising SC",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful added",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "addFundraisingSC",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "contractAddress": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/search": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "searchFundingPools",
+        "summary": "Search FundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/FundingPools"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchFundignPools",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/{id}/addFundraisingSC": {
+      "post": {
+        "tags": ["FundingPools"],
+        "operationId": "addFundraisingSC",
+        "summary": "Add Fundraising SC",
+        "description": "Endpoint for add fundraising SC",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful added",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "addFundraisingSC",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "contractAddress": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools": {
+      "post": {
+        "tags": ["FundingPools"],
+        "operationId": "createFundingPool",
+        "summary": "Create Funding Pool",
+        "description": "Endpoint for create funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful created",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "createFundingPool",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getAllFundingPools",
+        "summary": "Get All Funding Pools",
+        "description": "Endpoint for get all fundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v2/fundingPools": {
+      "post": {
+        "tags": ["FundingPools"],
+        "operationId": "createFundingPool",
+        "summary": "Create Funding Pool",
+        "description": "Endpoint for create funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful created",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "createFundingPool",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getAllFundingPools",
+        "summary": "Get All Funding Pools",
+        "description": "Endpoint for get all fundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/fundingPools/projects": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFilteredPools",
+        "summary": "Get Filtered Pools",
+        "description": "Endpoint for get filtered pools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v2/fundingPools/projects": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFilteredPools",
+        "summary": "Get Filtered Pools",
+        "description": "Endpoint for get filtered pools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/fundingPools/{slug}": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFundingPoolBySlug",
+        "summary": "Get Funding Pool By Slug",
+        "description": "Endpoint for get filtered pools by slug",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "properties": {
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["slug"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/{slug}": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFundingPoolBySlug",
+        "summary": "Get Funding Pool By Slug",
+        "description": "Endpoint for get filtered pools by slug",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "properties": {
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["slug"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools/company/{companyId}": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getCompanyFundingPools",
+        "summary": "Get Company FundingPools",
+        "description": "Endpoint for get company fundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/company/{companyId}": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getCompanyFundingPools",
+        "summary": "Get Company FundingPools",
+        "description": "Endpoint for get company fundingPools",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools/{fundingPoolId}/getAllSafts": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFoundingPoolSafts",
+        "summary": "Get Founding Pool Safts",
+        "description": "Endpoint for get founding pool safts",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "saftId": {
+                  "type": "string",
+                  "default": null
+                },
+                "procedureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "signatureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "ownerId": {
+                  "type": "string",
+                  "default": null
+                },
+                "isValid": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/{fundingPoolId}/getAllSafts": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getFoundingPoolSafts",
+        "summary": "Get Founding Pool Safts",
+        "description": "Endpoint for get founding pool safts",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "saftId": {
+                  "type": "string",
+                  "default": null
+                },
+                "procedureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "signatureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "ownerId": {
+                  "type": "string",
+                  "default": null
+                },
+                "isValid": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/fundingPools/pastDeals/companies": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getPastDeals",
+        "summary": "Get Past Deals",
+        "description": "Endpoint for get past deals",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "default": null
+                      },
+                      "companies": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "iconUrl": {
+                              "type": "string",
+                              "default": null
+                            },
+                            "name": {
+                              "type": "string",
+                              "default": null
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v2/fundingPools/pastDeals/companies": {
+      "get": {
+        "tags": ["FundingPools"],
+        "operationId": "getPastDeals",
+        "summary": "Get Past Deals",
+        "description": "Endpoint for get past deals",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "default": null
+                      },
+                      "companies": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "iconUrl": {
+                              "type": "string",
+                              "default": null
+                            },
+                            "name": {
+                              "type": "string",
+                              "default": null
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/fundingPools/{id}": {
+      "put": {
+        "tags": ["FundingPools"],
+        "operationId": "updateFundingPool",
+        "summary": "Update Funding Pool",
+        "description": "Endpoint for update funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully updated",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "updateCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Funding Pool does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["FundingPools"],
+        "operationId": "deleteFundingPool",
+        "summary": "Delete Funding Pool",
+        "description": "Endpoint for delete funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Funding pool does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/fundingPools/{id}": {
+      "put": {
+        "tags": ["FundingPools"],
+        "operationId": "updateFundingPool",
+        "summary": "Update Funding Pool",
+        "description": "Endpoint for update funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully updated",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "updateCompany",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Funding Pool does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/FundingPools",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["FundingPools"],
+        "operationId": "deleteFundingPool",
+        "summary": "Delete Funding Pool",
+        "description": "Endpoint for delete funding pool",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteUser",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Funding pool does not exist!"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/verify": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "verifySign",
+        "summary": "Verify Sign",
+        "description": "Endpoint for verify sign",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully verified",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "verifySign",
+            "schema": {
+              "properties": {
+                "signatureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "code": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["signatureId", "code"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/Investments/search": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "searchInvestments",
+        "summary": "Search Investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Investments"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchInvestments",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "companyName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v2/investments/verify": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "verifySign",
+        "summary": "Verify Sign",
+        "description": "Endpoint for verify sign",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully verified",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "message": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "verifySign",
+            "schema": {
+              "properties": {
+                "signatureId": {
+                  "type": "string",
+                  "default": null
+                },
+                "code": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["signatureId", "code"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/Investments/search": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "searchInvestments",
+        "summary": "Search Investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Investments"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchInvestments",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "companyName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v1/investments/sign/{templateId}": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "signInvestment",
+        "summary": "Sign Investment",
+        "description": "Endpoint for sign investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully signed",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "signatureId": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "procedureId": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "file": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "fileId": {
+                      "type": "string",
+                      "default": null
+                    }
+                  }
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "templateId",
+            "schema": {
+              "properties": {
+                "templateId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["templateId"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "signInvestment",
+            "schema": {
+              "properties": {
+                "amountInvested": {
+                  "type": "number",
+                  "default": null
+                },
+                "wallet": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["amountInvested", "wallet"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/sign/{templateId}": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "signInvestment",
+        "summary": "Sign Investment",
+        "description": "Endpoint for sign investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully signed",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "signatureId": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "procedureId": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "file": {
+                      "type": "string",
+                      "default": null
+                    },
+                    "fileId": {
+                      "type": "string",
+                      "default": null
+                    }
+                  }
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "templateId",
+            "schema": {
+              "properties": {
+                "templateId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["templateId"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "signInvestment",
+            "schema": {
+              "properties": {
+                "amountInvested": {
+                  "type": "number",
+                  "default": null
+                },
+                "wallet": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object",
+              "required": ["amountInvested", "wallet"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/{companyId}": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "registerInvestment",
+        "summary": "Register Investment",
+        "description": "Endpoint for register investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully registered",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "signInvestment",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/{companyId}": {
+      "post": {
+        "tags": ["Investments"],
+        "operationId": "registerInvestment",
+        "summary": "Register Investment",
+        "description": "Endpoint for register investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully registered",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "signInvestment",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/{id}/invest": {
+      "put": {
+        "tags": ["Investments"],
+        "operationId": "makeAnInvestment",
+        "summary": "Make An Investment",
+        "description": "Endpoint for make an investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "makeAnInvestment",
+            "schema": {
+              "properties": {
+                "transactionHash": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/{id}/invest": {
+      "put": {
+        "tags": ["Investments"],
+        "operationId": "makeAnInvestment",
+        "summary": "Make An Investment",
+        "description": "Endpoint for make an investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "makeAnInvestment",
+            "schema": {
+              "properties": {
+                "transactionHash": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/{id}/gasPrice": {
+      "put": {
+        "tags": ["Investments"],
+        "operationId": "putInvestmentGas",
+        "summary": "Put Investment Gas",
+        "description": "Endpoint for put investment gas",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "putInvestmentGas",
+            "schema": {
+              "properties": {
+                "gas": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/{id}/gasPrice": {
+      "put": {
+        "tags": ["Investments"],
+        "operationId": "putInvestmentGas",
+        "summary": "Put Investment Gas",
+        "description": "Endpoint for put investment gas",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "putInvestmentGas",
+            "schema": {
+              "properties": {
+                "gas": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/amountSummary/{slug}": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "getInvestAmountSummary",
+        "summary": "Get Invest Amount Summary",
+        "description": "Endpoint for get invest amount summary",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "amount": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["slug"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/amountSummary/{slug}": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "getInvestAmountSummary",
+        "summary": "Get Invest Amount Summary",
+        "description": "Endpoint for get invest amount summary",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                },
+                "amount": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["slug"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/exist": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "isInvestmentExist",
+        "summary": "Is Investment Exist",
+        "description": "Endpoint for check is investment exist",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully checked",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateQuery",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/exist": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "isInvestmentExist",
+        "summary": "Is Investment Exist",
+        "description": "Endpoint for check is investment exist",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully checked",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateQuery",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments/check/{companyId}": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "checkUserInvestmentForCompany",
+        "summary": "Check User Investment For Company",
+        "description": "Endpoint for check user investment for company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully checked",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "data": {
+                  "type": "object",
+                  "$ref": "#/definitions/Investments"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateQuery",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/investments/check/{companyId}": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "checkUserInvestmentForCompany",
+        "summary": "Check User Investment For Company",
+        "description": "Endpoint for check user investment for company",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully checked",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "data": {
+                  "type": "object",
+                  "$ref": "#/definitions/Investments"
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "properties": {
+                "companyId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["companyId"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "fundingPoolId",
+            "schema": {
+              "properties": {
+                "fundingPoolId": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreateQuery",
+              "type": "object",
+              "required": ["fundingPoolId"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/investments": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "getAllInvestments",
+        "summary": "Get All Investments",
+        "description": "Endpoint for get all investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Investments"],
+        "operationId": "deleteInvestment",
+        "summary": "Delete Investment",
+        "description": "Endpoint for delete investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteInvestment",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "properties": {
+                "userId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["userId"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "saftId",
+            "schema": {
+              "properties": {
+                "saftId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["saftId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/investments": {
+      "get": {
+        "tags": ["Investments"],
+        "operationId": "getAllInvestments",
+        "summary": "Get All Investments",
+        "description": "Endpoint for get all investments",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Investments",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Investments"],
+        "operationId": "deleteInvestment",
+        "summary": "Delete Investment",
+        "description": "Endpoint for delete investment",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "deleteInvestment",
+              "type": "object",
+              "required": []
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "properties": {
+                "userId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["userId"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "saftId",
+            "schema": {
+              "properties": {
+                "saftId": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["saftId"]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/invitations/search": {
+      "get": {
+        "tags": ["Invitations"],
+        "operationId": "searchInvitations",
+        "summary": "Search Invitations",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Invitations"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchInvitations",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recipient",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 0
+          }
+        ]
+      }
+    },
+    "/v1/invitations": {
+      "get": {
+        "tags": ["Invitations"],
+        "operationId": "getAllInvitations",
+        "summary": "Get All Invitations",
+        "description": "Endpoint for get all invitations",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Invitations",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/invitations/search": {
+      "get": {
+        "tags": ["Invitations"],
+        "operationId": "searchInvitations",
+        "summary": "Search Invitations",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Invitations"
+                  }
+                },
+                "count": {
+                  "type": "number",
+                  "default": 0
+                },
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "searchInvitations",
+              "type": "object",
+              "required": ["success"]
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v2/invitations": {
+      "get": {
+        "tags": ["Invitations"],
+        "operationId": "getAllInvitations",
+        "summary": "Get All Invitations",
+        "description": "Endpoint for get all invitations",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully got",
+            "schema": {
+              "$ref": "#/definitions/Invitations",
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/invitations/{id}": {
+      "delete": {
+        "tags": ["Invitations"],
+        "operationId": "deleteInvitation",
+        "summary": "Delete Invitation",
+        "description": "Endpoint for delete invitation",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/invitations/{id}": {
+      "delete": {
+        "tags": ["Invitations"],
+        "operationId": "deleteInvitation",
+        "summary": "Delete Invitation",
+        "description": "Endpoint for delete invitation",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["id"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/ondato_webhook/{identification_id}/receive": {
+      "post": {
+        "tags": ["Webhooks"],
+        "operationId": "kycProcess",
+        "summary": "KYC Process",
+        "description": "Endpoint for KYC process",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identification_id",
+            "schema": {
+              "properties": {
+                "identification_id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["identification_id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "kycProcess",
+            "schema": {
+              "properties": {
+                "Event": {
+                  "type": "string",
+                  "default": null
+                },
+                "RequestStatus": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["Event", "RequestStatus"]
+            }
+          }
+        ]
+      }
+    },
+    "/v2/ondato_webhook/{identification_id}/receive": {
+      "post": {
+        "tags": ["Webhooks"],
+        "operationId": "kycProcess",
+        "summary": "KYC Process",
+        "description": "Endpoint for KYC process",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successfully done",
+            "schema": {
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "default": true
+                }
+              },
+              "title": "CreateBody",
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Something went wrong"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identification_id",
+            "schema": {
+              "properties": {
+                "identification_id": {
+                  "type": "string"
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["identification_id"]
+            }
+          },
+          {
+            "in": "body",
+            "name": "kycProcess",
+            "schema": {
+              "properties": {
+                "Event": {
+                  "type": "string",
+                  "default": null
+                },
+                "RequestStatus": {
+                  "type": "string",
+                  "default": null
+                }
+              },
+              "title": "CreatePath",
+              "type": "object",
+              "required": ["Event", "RequestStatus"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "produces": ["application/json"],
+  "swagger": "2.0",
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "body",
+      "description": "This API requires authentication using a bearer token. Please include the token in the 'Authorization' header of your requests. ex: Bearer [space] <your-token>"
+    }
+  }
+}
